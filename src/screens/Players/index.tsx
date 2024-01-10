@@ -105,7 +105,7 @@ export function Players(){
             Alert.alert('Pessoas', 'Não foi possivel carregar o time.');
         
         } finally {
-            setIsLoading(false); // terminou de carregar desativa o loading
+            setIsLoading(false); // terminou de carregar desativa o loading ...
         }
         
     }
