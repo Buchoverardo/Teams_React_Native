@@ -71,8 +71,8 @@ export function Groups() {
       
       <Header />
       <Highlight 
-        title='Turmas'
-        subtitle='Jogue com sua turma'
+        title='TREINOS AAI'
+        subtitle='Jogue com sua turma!'
       />
       
     {

@@ -61,7 +61,7 @@ export function NewGroup(){
 
                 <Highlight 
                     title='Nova Turma'
-                    subtitle='Crie a turma para adicionar pessoas!'
+                    subtitle='Crie a turma para adicionar jogadores!'
                 />
 
                 <Input 

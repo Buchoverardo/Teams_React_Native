@@ -10,6 +10,7 @@ export type ButtonIconTypeStyleProps = 'PRIMARY' | 'SECONDARY';
 // pegando a tipagem
 type Props = {
     type: ButtonIconTypeStyleProps
+    soma: void;
 }
 
 export const Container = styled( TouchableOpacity )`
@@ -19,12 +20,12 @@ export const Container = styled( TouchableOpacity )`
     justify-content: center;
     align-items: center;
 
-    margin-left: 10px;
+    margin-left: 1px;
 `;
 
 // usando o icone do material icon e atribuindo a timagem e a config do tema pra ele
 // no color tenho ua condicional, se for primary uso verde, se nao, uso vermelho
 export const Icon = styled(MaterialIcons).attrs <Props> (({ theme, type }) => ({
-    size: 24,
+    size: 33,
     color: type === 'PRIMARY' ? theme.COLORS.GREEN_700 : theme.COLORS.RED,
 }))``;

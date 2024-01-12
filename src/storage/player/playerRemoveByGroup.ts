@@ -8,7 +8,7 @@ export async function playerRemoveByGroup(playerName: string, group: string) {
 
     try {
         // acesso o storage para pegar os players do grupo
-        const storage = await playersGetByGroup(group);
+        const storage = await playersGetByGroup(group, playerName);
 
         // agora faco um filter recuperando todo mundo menos ( diferente !== ) o que quero deletar
         const filtered = storage.filter(player => player.name !== playerName);

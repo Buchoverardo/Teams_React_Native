@@ -7,6 +7,8 @@ import { playerAddByGroup } from'@storage/player/playerAddByGroups';
 import { PlayerStorageDTO } from '@storage/player/PlayerStorageDTO';
 import { playerRemoveByGroup } from '@storage/player/playerRemoveByGroup';
 import { groupRemoveByName } from '@storage/group/groupRemoveByName';
+import { frequencyAddByPlayer} from '@storage/player/frequencyAddByPlayer';
+import { frequencyRemoveByPlayer } from '@storage/player/frequencyRemoveByPlayer';
 
 import { Container, Form, HeaderList, NumberPlayers } from './styles';
 
@@ -24,10 +26,13 @@ import { AppError } from '@utils/AppError';
 
 type RouteParams = {
     group: string;
+
 }
 // acima estou tipando os parametros que veio na rota
 
 export function Players(){
+
+    const frequency ='1';
 
     const [isLoading, setIsLoading] = useState(true);
     // chamando o loading antes de carregar a tela
@@ -37,9 +42,11 @@ export function Players(){
     // aqui eu passo o arrei dos meu times criados, usando o primeiro como incial
     const [ team, setTeam ] = useState('Manha');
     // aqui vou fazer a contagem de quantos players tem nos times
+
     const [ players, setPlayer ] = useState<PlayerStorageDTO[]>([]);
     // acima tipei usando o storageTDO, falando que tambem é uma lista
 
+    
     const navigation = useNavigation();
     // chamo o useNavigation pra voltar pra rota
 
@@ -62,11 +69,13 @@ export function Players(){
         const newPlayer = {
             name: newPlayerName,
             team: team,
+            frequency: frequency,
         }
+
 
         try {
             // chamo a funcao pra adicionar o jogador no grupo, mandando nome e o grupo
-            await playerAddByGroup( newPlayer, group );
+            await playerAddByGroup( newPlayer, group, frequency );
 
             newPlayerNameInputRef.current?.blur();
             // aqui eu falo que meu ref do inputText current é opcional e dou um blur pra tirar o cursor de dentro do input
@@ -97,9 +106,11 @@ export function Players(){
             setIsLoading(true);
 
             //crio o playerbyteam usando a funcao playersGetByGroupandTeam passando group e team que recedo do useState
-            const playersByTeam = await playersGetByGroupAndTeam(group, team);
+            const playersByTeam = await playersGetByGroupAndTeam(group, team, frequency);
+
             setPlayer(playersByTeam);
             // acima eu set no useState o playeyrs que recebi
+
 
         }catch (error) {
             Alert.alert('Pessoas', 'Não foi possivel carregar o time.');
@@ -110,6 +121,50 @@ export function Players(){
         
     }
 
+    // adiciono uma frequencia ao jogador
+    async function frequencyPlayerByTeam(playerName: string) {
+        
+        try {
+            // chamo a funcao para listar e somar 1 na frequencia do player
+            await frequencyAddByPlayer(playerName, group);
+            
+            fetchPlayersByTeam(); // chamo a funcao novamente para recarregar a listagem
+
+        } catch ( error ) {
+            Alert.alert('Frequencia','Não foi possivel somar.');
+        }
+        
+    }
+
+    // removo uma frequencia ao jogador
+    async function frequencyRemovePlayer(playerName: string) {
+        
+        try {
+            // chamo a funcao para listar e somar 1 na frequencia do player
+            await frequencyRemoveByPlayer(playerName, group);
+            
+            fetchPlayersByTeam(); // chamo a funcao novamente para recarregar a listagem
+
+        } catch ( error ) {
+            Alert.alert('Frequencia','Não foi possivel remover.');
+        }
+        
+    }
+
+     // aqui eu chamo o alert quando ele for remover o jogador,  sendo verdadeiro chamo a funcao abaixo
+     async function confirmRemove(playerName: string) {
+        Alert.alert('Observação','O que pretende fazer ?',
+        [
+            { text: 'Subtrair uma frequencia ?', onPress: () => frequencyRemovePlayer(playerName) },
+            
+            { text: 'Excluir o jogador ?', onPress: () => handlePlayerRemove(playerName)},
+
+            { text: 'Cancelar', style: 'cancel' },
+        ])
+        
+    }
+
+    // removendo jogador
     async function handlePlayerRemove(playerName: string) {
 
         try {
@@ -122,6 +177,8 @@ export function Players(){
         }
         
     }
+
+
 
     async function groupRemove() {
 
@@ -153,6 +210,7 @@ export function Players(){
     }, [team]);
     // cada vez que muda o state team, o useEffect é executado novamente
 
+    
    
     return (
         <Container>
@@ -161,7 +219,7 @@ export function Players(){
 
             <Highlight 
                 title={group}
-                subtitle='Adcione a galera e separe os times!'
+                subtitle='Adcione jogadores e separe por período'
             />
 
             <Form>
@@ -198,7 +256,7 @@ export function Players(){
             />
 
             <NumberPlayers> 
-                {players.length}
+            {players.length}
             </NumberPlayers>
 
             </HeaderList>
@@ -213,7 +271,9 @@ export function Players(){
                 renderItem={({ item }) => (
                     <PlayerCard 
                         name={item.name} 
-                        onRemove={() => handlePlayerRemove(item.name)}
+                        frequency={item.frequency}
+                        onRemove={() => confirmRemove(item.name)}
+                        onFrequency={()=> frequencyPlayerByTeam(item.name)}
                     />
                 )}
                 ListEmptyComponent={() => (

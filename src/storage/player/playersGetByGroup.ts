@@ -4,7 +4,7 @@ import { PLAYER_COLLECTION } from '@storage/storageConfig';
 
 import { PlayerStorageDTO } from './PlayerStorageDTO';
 
-export async function playersGetByGroup(group: string) {
+export async function playersGetByGroup(group: string, frequency: string) {
 
     try {
         // buscando pela lista de jogadores pelo grupo
